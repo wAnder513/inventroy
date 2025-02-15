@@ -8,7 +8,7 @@
         @mousedown="(event) => onDragStart(rowIndex, colIndex, event)"
         @mouseup="onDrop(rowIndex, colIndex)"
       >
-        <div
+        <template
           v-if="
             cell &&
             !(
@@ -17,21 +17,27 @@
               dragging.startCol === colIndex
             )
           "
-          class="inventory-item"
         >
-          {{ cell }}
-        </div>
+          <div class="inventory-item">
+            <img :src="`/src/assets/${cell.image}.jpg`" alt="item inventory" />
+          </div>
+
+          <button class="inventory_quantity" @click.stop="openQuantityModal">
+            {{ cell.quantity }}
+          </button>
+        </template>
       </div>
     </div>
 
     <!-- Перетаскиваемый элемент -->
-    <div
+
+    <img
       v-if="dragging.isDragging"
       class="inventory-item dragging-item"
+      :src="`/src/assets/${dragging.item.image}.jpg`"
+      alt="item inventory"
       :style="draggingItemStyle"
-    >
-      {{ dragging.item }}
-    </div>
+    />
   </div>
 </template>
 
@@ -44,9 +50,9 @@ const grid = ref(
 );
 
 // Добавляем начальные элементы в инвентарь
-grid.value[0][0] = "Меч";
-grid.value[1][1] = "Щит";
-grid.value[2][2] = "Зелье";
+grid.value[0][0] = { image: "green-item", quantity: 1 };
+grid.value[1][1] = { image: "brown-item", quantity: 2 };
+grid.value[2][2] = { image: "purple-item", quantity: 2 };
 
 // Состояние для перетаскивания
 const dragging = ref({
@@ -58,8 +64,18 @@ const dragging = ref({
   currentY: 0,
 });
 
-// Начало перетаскивания
+const draggingItemStyle = computed(() => ({
+  position: "fixed",
+  left: `${dragging.value.currentX}px`,
+  top: `${dragging.value.currentY}px`,
+  pointerEvents: "none",
+}));
+
 function onDragStart(row, col, event) {
+  if (event.target.closest(".inventory_quantity")) {
+    return;
+  }
+
   if (!grid.value[row][col]) return;
 
   dragging.value = {
@@ -79,12 +95,11 @@ function onDragStart(row, col, event) {
   window.addEventListener("mouseup", onDragEnd);
 }
 
-// Перемещение элемента
 function onDrag(event) {
   if (!dragging.value.isDragging) return;
 
-  // Обновляем позицию элемента
-  dragging.value.currentX = event.clientX - 25; // Центрируем элемент относительно курсора
+  // Центрируем элемент относительно курсора
+  dragging.value.currentX = event.clientX - 25;
   dragging.value.currentY = event.clientY - 25;
 }
 
@@ -92,11 +107,9 @@ function onDrag(event) {
 function onDragEnd(event) {
   if (!dragging.value.isDragging) return;
 
-  // Убираем обработчики событий
   window.removeEventListener("mousemove", onDrag);
   window.removeEventListener("mouseup", onDragEnd);
 
-  // Сбрасываем состояние перетаскивания
   dragging.value.isDragging = false;
 
   // Если элемент был "брошен" за пределы сетки, возвращаем его на исходное место
@@ -121,16 +134,12 @@ function onDrop(row, col) {
   }
 }
 
-// Стиль для перетаскиваемого элемента
-const draggingItemStyle = computed(() => ({
-  position: "fixed",
-  left: `${dragging.value.currentX}px`,
-  top: `${dragging.value.currentY}px`,
-  pointerEvents: "none", // Отключаем взаимодействие с элементом во время перетаскивания
-}));
+function openQuantityModal() {
+  console.log("open modal");
+}
 </script>
 
-<style>
+<style scoped>
 .inventory-grid {
   display: flex;
   flex-direction: column;
@@ -153,8 +162,7 @@ const draggingItemStyle = computed(() => ({
 }
 
 .inventory-item {
-  background-color: #dd1818;
-  padding: 5px;
+  padding: 4px;
   border-radius: 4px;
   cursor: grab;
   user-select: none;
@@ -164,8 +172,18 @@ const draggingItemStyle = computed(() => ({
   cursor: grabbing;
 }
 
+.inventory_quantity {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  border: 1px solid var(--gray-color);
+  border-radius: 4px 0 0;
+  padding: 2px 8px;
+  font-size: 12px;
+  background: none;
+}
+
 .dragging-item {
   z-index: 10; /* Перетаскиваемый элемент должен быть поверх других элементов */
-  background-color: #e0e0e0; /* Визуальное выделение перетаскиваемого элемента */
 }
 </style>
