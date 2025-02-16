@@ -1,6 +1,6 @@
 <script setup>
 import CardDescription from "../components/card-description/CardDescription.vue";
-import InventoryGrid from "../components/grid-inventroy/InventoryGrid.vue";
+import InventoryManager from "../components/grid-inventroy/InventoryManager.vue";
 import InventoryParameters from "../components/parameters/InventoryParameters.vue";
 </script>
 
@@ -8,7 +8,7 @@ import InventoryParameters from "../components/parameters/InventoryParameters.vu
   <div class="main-inventory">
     <div class="main-inventory_wrapper">
       <CardDescription></CardDescription>
-      <InventoryGrid></InventoryGrid>
+      <InventoryManager></InventoryManager>
     </div>
 
     <InventoryParameters></InventoryParameters>
@@ -27,6 +27,7 @@ import InventoryParameters from "../components/parameters/InventoryParameters.vu
 }
 
 .main-inventory_wrapper {
+  max-height: 500px;
   display: flex;
   gap: 24px;
 }

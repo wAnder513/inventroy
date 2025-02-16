@@ -3,41 +3,44 @@ import { ref, onMounted } from "vue";
 
 const lines = ref([]);
 
-// Функция для генерации случайной ширины в процентах
-const generateRandomWidth = () => {
-  return Math.floor(Math.random() * (100 - 40 + 1)) + 40; // Ширина от 40% до 100%
-};
+const props = defineProps({
+  numberOfLines: { type: Number, default: 5 },
+});
 
 onMounted(() => {
-  const numberOfLines = 5;
-  lines.value = Array.from({ length: numberOfLines }, () => ({
+  lines.value = Array.from({ length: props.numberOfLines }, () => ({
     width: generateRandomWidth(),
   }));
 });
+
+// Генерация случайной ширины в процентах
+function generateRandomWidth() {
+  return Math.floor(Math.random() * (100 - 40 + 1)) + 40;
+}
 </script>
 
 <template>
-  <div class="skeleton-loader">
-    <div class="skeleton-line skeleton-header"></div>
+  <div class="skeleton_loader">
+    <div class="skeleton_line skeleton_header"></div>
     <div
-      class="skeleton-line"
+      class="skeleton_line"
       v-for="(line, index) in lines"
       :key="index"
       :style="{ width: line.width + '%' }"
     ></div>
-    <div class="skeleton-line skeleton-footer"></div>
+    <div class="skeleton_line skeleton_footer"></div>
   </div>
 </template>
 
 <style scoped>
-.skeleton-loader {
+.skeleton_loader {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
 }
 
-.skeleton-line {
+.skeleton_line {
   background-color: var(--gray-color);
   height: 8px;
   margin-bottom: 16px;
@@ -46,30 +49,30 @@ onMounted(() => {
   width: 100%;
 }
 
-.skeleton-line:last-child {
+.skeleton_line:last-child {
   margin-bottom: 0;
 }
 
-.skeleton-header {
+.skeleton_header {
   height: 20px;
   width: 100%;
   margin-bottom: 15px;
 }
 
-.skeleton-footer {
+.skeleton_footer {
   width: 30%;
   margin-top: 15px;
 }
 
 @keyframes pulse {
   0% {
-    background-color: var(--dark-gray);
+    background-color: var(--dark-gray-color);
   }
   50% {
     background-color: var(--gray-color);
   }
   100% {
-    background-color: var(--dark-gray);
+    background-color: var(--dark-gray-color);
   }
 }
 </style>

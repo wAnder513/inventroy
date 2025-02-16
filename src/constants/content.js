@@ -1,0 +1,4 @@
+export const MODAL_CONTENT = {
+  DELETE: "DELETE",
+  QUANTITY: "QUANTITY",
+};

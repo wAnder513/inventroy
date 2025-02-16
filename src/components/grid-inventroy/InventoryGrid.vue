@@ -1,11 +1,16 @@
 <template>
-  <div class="inventory-grid">
-    <div v-for="(row, rowIndex) in grid" :key="rowIndex" class="inventory-row">
+  <div class="inventory_grid">
+    <div v-for="(row, rowIndex) in grid" :key="rowIndex" class="inventory_row">
       <div
         v-for="(cell, colIndex) in row"
         :key="colIndex"
-        class="inventory-cell"
-        @mousedown="(event) => onDragStart(rowIndex, colIndex, event)"
+        class="inventory_cell"
+        @mousedown="
+          (event) =>
+            event.button === 2 // клик ПКМ
+              ? openDeleteModal(cell)
+              : onDragStart(rowIndex, colIndex, event)
+        "
         @mouseup="onDrop(rowIndex, colIndex)"
       >
         <template
@@ -18,23 +23,24 @@
             )
           "
         >
-          <div class="inventory-item">
-            <img :src="`/src/assets/${cell.image}.jpg`" alt="item inventory" />
+          <div class="inventory_item">
+            <img :src="cell.image" alt="item inventory" />
           </div>
 
-          <button class="inventory_quantity" @click.stop="openQuantityModal">
+          <button
+            class="inventory_quantity"
+            @click.stop="openQuantityModal(cell)"
+          >
             {{ cell.quantity }}
           </button>
         </template>
       </div>
     </div>
 
-    <!-- Перетаскиваемый элемент -->
-
     <img
       v-if="dragging.isDragging"
-      class="inventory-item dragging-item"
-      :src="`/src/assets/${dragging.item.image}.jpg`"
+      class="inventory_item dragging_item"
+      :src="dragging.item.image"
       alt="item inventory"
       :style="draggingItemStyle"
     />
@@ -44,17 +50,31 @@
 <script setup>
 import { ref, computed } from "vue";
 
-// Инициализация сетки 5x5
+const emit = defineEmits(["openModalQuantity", "openDeleteModal"]);
+
 const grid = ref(
   Array.from({ length: 5 }, () => Array.from({ length: 5 }, () => null))
 );
 
-// Добавляем начальные элементы в инвентарь
-grid.value[0][0] = { image: "green-item", quantity: 1 };
-grid.value[1][1] = { image: "brown-item", quantity: 2 };
-grid.value[2][2] = { image: "purple-item", quantity: 2 };
+grid.value[0][0] = {
+  id: 0,
+  image: "/src/assets/green-item.jpg",
+  quantity: 1,
+  info: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cum magni consequuntur placeat excepturi. Fugit dicta officiis tenetur maxime quia. Soluta ad praesentium voluptate autem, corrupti obcaecati officia vero aliquid dolor.",
+};
+grid.value[1][1] = {
+  id: 1,
+  image: "/src/assets/brown-item.jpg",
+  quantity: 2,
+  info: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cum magni consequuntur placeat excepturi. Fugit dicta officiis tenetur maxime quia. Soluta ad praesentium voluptate autem, corrupti obcaecati officia vero aliquid dolor.",
+};
+grid.value[2][2] = {
+  id: 2,
+  image: "/src/assets/purple-item.jpg",
+  quantity: 2,
+  info: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cum magni consequuntur placeat excepturi. Fugit dicta officiis tenetur maxime quia. Soluta ad praesentium voluptate autem, corrupti obcaecati officia vero aliquid dolor.",
+};
 
-// Состояние для перетаскивания
 const dragging = ref({
   isDragging: false,
   item: null,
@@ -90,7 +110,6 @@ function onDragStart(row, col, event) {
   // Очищаем клетку, откуда начали перетаскивание
   grid.value[row][col] = null;
 
-  // Добавляем обработчики событий для перемещения и завершения перетаскивания
   window.addEventListener("mousemove", onDrag);
   window.addEventListener("mouseup", onDragEnd);
 }
@@ -103,7 +122,6 @@ function onDrag(event) {
   dragging.value.currentY = event.clientY - 25;
 }
 
-// Завершение перетаскивания
 function onDragEnd(event) {
   if (!dragging.value.isDragging) return;
 
@@ -113,14 +131,13 @@ function onDragEnd(event) {
   dragging.value.isDragging = false;
 
   // Если элемент был "брошен" за пределы сетки, возвращаем его на исходное место
-  const targetCell = event.target.closest(".inventory-cell");
+  const targetCell = event.target.closest(".inventory_cell");
   if (!targetCell) {
     grid.value[dragging.value.startRow][dragging.value.startCol] =
       dragging.value.item;
   }
 }
 
-// Обработка "броска" элемента в клетку
 function onDrop(row, col) {
   if (dragging.value.isDragging) {
     // Если клетка пустая, перемещаем элемент
@@ -134,24 +151,28 @@ function onDrop(row, col) {
   }
 }
 
-function openQuantityModal() {
-  console.log("open modal");
+function openQuantityModal(inventoryItem) {
+  emit("openModalQuantity", inventoryItem);
+}
+
+function openDeleteModal(inventoryItem) {
+  emit("openDeleteModal", inventoryItem);
 }
 </script>
 
 <style scoped>
-.inventory-grid {
+.inventory_grid {
   display: flex;
   flex-direction: column;
   position: relative;
   border: 1px solid var(--gray-color);
 }
 
-.inventory-row {
+.inventory_row {
   display: flex;
 }
 
-.inventory-cell {
+.inventory_cell {
   width: 105px;
   height: 100px;
   border: 1px solid var(--gray-color);
@@ -161,14 +182,14 @@ function openQuantityModal() {
   position: relative;
 }
 
-.inventory-item {
+.inventory_item {
   padding: 4px;
   border-radius: 4px;
   cursor: grab;
   user-select: none;
 }
 
-.inventory-item:active {
+.inventory_item:active {
   cursor: grabbing;
 }
 
@@ -183,7 +204,7 @@ function openQuantityModal() {
   background: none;
 }
 
-.dragging-item {
+.dragging_item {
   z-index: 10; /* Перетаскиваемый элемент должен быть поверх других элементов */
 }
 </style>
