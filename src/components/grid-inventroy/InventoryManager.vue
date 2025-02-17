@@ -5,41 +5,53 @@ import RightSideModal from "../common/RightSideModal.vue";
 import SkeletonLoader from "../common/SkeletonLoader.vue";
 import InventoryGrid from "../grid-inventroy/InventoryGrid.vue";
 import { MODAL_CONTENT } from "../../constants/content";
+import { useInventory } from "../../store/inventory";
 
-const currentItem = reactive({ quantity: 0, id: null });
+let currentItem = reactive({ quantity: 0, id: null });
 const content = ref(MODAL_CONTENT.QUANTITY);
 
 const { setImage, openModal, closeModal } = useModal();
+const { changeQuantity, deleteItemInventory } = useInventory();
 
 function openQuantityModal(inventoryItem) {
   content.value = MODAL_CONTENT.QUANTITY;
+  currentItem = inventoryItem;
 
-  currentItem.quantity = inventoryItem.quantity;
   setImage(inventoryItem.image);
   openModal();
 }
 
 function openDeleteModal(inventoryItem) {
   content.value = MODAL_CONTENT.DELETE;
-  currentItem.id = inventoryItem.id;
+  currentItem = inventoryItem;
 
   setImage(inventoryItem.image);
   openModal();
 }
 
 function changeQuantityItem() {
-  console.log(inputQuantity);
+  if (currentItem.quantity === "") {
+    closeModal();
+  } else {
+    currentItem.quantity <= 0
+      ? deleteItem()
+      : changeQuantity(currentItem.id, currentItem.quantity);
+
+    closeModal();
+  }
 }
 
 function deleteItem() {
-  console.log(currentItem.id);
+  deleteItemInventory(currentItem.id);
+
+  closeModal();
 }
 </script>
 
 <template>
   <div>
     <InventoryGrid
-      @open-modal-quantity="openQuantityModal"
+      @open-quantity-modal="openQuantityModal"
       @open-delete-modal="openDeleteModal"
     ></InventoryGrid>
 
@@ -54,6 +66,7 @@ function deleteItem() {
             <input
               class="inventory-manager_input"
               type="number"
+              min="0"
               max="999"
               placeholder="Введите количество"
               v-model="currentItem.quantity"

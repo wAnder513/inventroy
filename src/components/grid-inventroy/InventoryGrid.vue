@@ -49,31 +49,11 @@
 
 <script setup>
 import { ref, computed } from "vue";
+import { useInventory } from "../../store/inventory";
 
-const emit = defineEmits(["openModalQuantity", "openDeleteModal"]);
+const inventoryStore = useInventory();
 
-const grid = ref(
-  Array.from({ length: 5 }, () => Array.from({ length: 5 }, () => null))
-);
-
-grid.value[0][0] = {
-  id: 0,
-  image: "/src/assets/green-item.jpg",
-  quantity: 1,
-  info: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cum magni consequuntur placeat excepturi. Fugit dicta officiis tenetur maxime quia. Soluta ad praesentium voluptate autem, corrupti obcaecati officia vero aliquid dolor.",
-};
-grid.value[1][1] = {
-  id: 1,
-  image: "/src/assets/brown-item.jpg",
-  quantity: 2,
-  info: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cum magni consequuntur placeat excepturi. Fugit dicta officiis tenetur maxime quia. Soluta ad praesentium voluptate autem, corrupti obcaecati officia vero aliquid dolor.",
-};
-grid.value[2][2] = {
-  id: 2,
-  image: "/src/assets/purple-item.jpg",
-  quantity: 2,
-  info: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cum magni consequuntur placeat excepturi. Fugit dicta officiis tenetur maxime quia. Soluta ad praesentium voluptate autem, corrupti obcaecati officia vero aliquid dolor.",
-};
+const emit = defineEmits(["openQuantityModal", "openDeleteModal"]);
 
 const dragging = ref({
   isDragging: false,
@@ -90,6 +70,19 @@ const draggingItemStyle = computed(() => ({
   top: `${dragging.value.currentY}px`,
   pointerEvents: "none",
 }));
+
+const grid = computed(() => {
+  const newGrid = Array.from({ length: 5 }, () =>
+    Array.from({ length: 5 }, () => null)
+  );
+  inventoryStore.inventoryItems.forEach((item) => {
+    const [row, col] = item.gridPosition;
+    if (row >= 0 && row < 5 && col >= 0 && col < 5) {
+      newGrid[row][col] = item;
+    }
+  });
+  return newGrid;
+});
 
 function onDragStart(row, col, event) {
   if (event.target.closest(".inventory_quantity")) {
@@ -132,6 +125,7 @@ function onDragEnd(event) {
 
   // Если элемент был "брошен" за пределы сетки, возвращаем его на исходное место
   const targetCell = event.target.closest(".inventory_cell");
+
   if (!targetCell) {
     grid.value[dragging.value.startRow][dragging.value.startCol] =
       dragging.value.item;
@@ -139,24 +133,26 @@ function onDragEnd(event) {
 }
 
 function onDrop(row, col) {
-  if (dragging.value.isDragging) {
-    // Если клетка пустая, перемещаем элемент
-    if (!grid.value[row][col]) {
-      grid.value[row][col] = dragging.value.item;
-    } else {
-      // Если клетка занята, возвращаем элемент на исходное место
-      grid.value[dragging.value.startRow][dragging.value.startCol] =
-        dragging.value.item;
-    }
+  if (!dragging.value.isDragging) return;
+
+  // Если клетка пустая, перемещаем элемент
+  if (!grid.value[row][col]) {
+    grid.value[row][col] = dragging.value.item;
+
+    inventoryStore.changeGridPosition(dragging.value.item.id, [row, col]);
+  } else {
+    // Если клетка занята, возвращаем элемент на исходное место
+    grid.value[dragging.value.startRow][dragging.value.startCol] =
+      dragging.value.item;
   }
 }
 
 function openQuantityModal(inventoryItem) {
-  emit("openModalQuantity", inventoryItem);
+  emit("openQuantityModal", { ...inventoryItem });
 }
 
 function openDeleteModal(inventoryItem) {
-  emit("openDeleteModal", inventoryItem);
+  emit("openDeleteModal", { ...inventoryItem });
 }
 </script>
 
@@ -205,6 +201,6 @@ function openDeleteModal(inventoryItem) {
 }
 
 .dragging_item {
-  z-index: 10; /* Перетаскиваемый элемент должен быть поверх других элементов */
+  z-index: 10;
 }
 </style>

@@ -2,21 +2,19 @@
   <div class="modal_overlay" v-if="isOpen" @click="closeModal">
     <div class="modal_content" @click.stop>
       <button class="modal_close" @click="closeModal">&#x2715;</button>
-      <!-- Секция с картинкой -->
+
       <div class="modal_image">
         <img :src="image" alt="Modal Image" />
       </div>
 
       <hr class="modal_line" />
 
-      <!-- Секция с описанием (slot) -->
       <div class="modal_description">
         <slot name="description"></slot>
       </div>
 
       <hr class="modal_line" />
 
-      <!-- Секция с футером (slot) -->
       <div class="modal_footer">
         <slot name="footer"></slot>
       </div>

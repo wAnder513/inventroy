@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { readonly, ref } from "vue";
 
 const isOpen = ref(false);
 const image = ref("");
@@ -17,7 +17,7 @@ export default function useModal() {
   }
 
   return {
-    isOpen,
+    isOpen: readonly(isOpen),
     image,
     openModal,
     closeModal,

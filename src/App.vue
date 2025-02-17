@@ -1,4 +1,10 @@
-<script setup></script>
+<script setup>
+import { useInventory } from "./store/inventory";
+
+const { initInventory } = useInventory();
+
+initInventory();
+</script>
 
 <template>
   <div>
