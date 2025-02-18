@@ -7,7 +7,7 @@ import InventoryGrid from "../grid-inventroy/InventoryGrid.vue";
 import { MODAL_CONTENT } from "../../constants/content";
 import { useInventory } from "../../store/inventory";
 
-let currentItem = reactive({ quantity: 0, id: null });
+let currentItem = ref({});
 const content = ref(MODAL_CONTENT.QUANTITY);
 
 const { setImage, openModal, closeModal } = useModal();
@@ -32,13 +32,14 @@ function openDeleteModal(inventoryItem) {
 function changeQuantityItem() {
   if (currentItem.quantity === "") {
     closeModal();
-  } else {
-    currentItem.quantity <= 0
-      ? deleteItem()
-      : changeQuantity(currentItem.id, currentItem.quantity);
-
-    closeModal();
+    return;
   }
+
+  currentItem.quantity <= 0
+    ? deleteItem()
+    : changeQuantity(currentItem.id, currentItem.quantity);
+
+  closeModal();
 }
 
 function deleteItem() {
@@ -82,7 +83,11 @@ function deleteItem() {
               </button>
 
               <button type="submit" class="inventory-manager_button complite">
-                Подтвердить
+                {{
+                  content === MODAL_CONTENT.QUANTITY
+                    ? "Подтвердить"
+                    : "Удалить предмет"
+                }}
               </button>
             </div>
           </form>

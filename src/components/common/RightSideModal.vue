@@ -1,32 +1,34 @@
-<template>
-  <div class="modal_overlay" v-if="isOpen" @click="closeModal">
-    <div class="modal_content" @click.stop>
-      <button class="modal_close" @click="closeModal">&#x2715;</button>
-
-      <div class="modal_image">
-        <img :src="image" alt="Modal Image" />
-      </div>
-
-      <hr class="modal_line" />
-
-      <div class="modal_description">
-        <slot name="description"></slot>
-      </div>
-
-      <hr class="modal_line" />
-
-      <div class="modal_footer">
-        <slot name="footer"></slot>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import useModal from "../../composible/useModal";
 
 const { isOpen, image, closeModal } = useModal();
 </script>
+
+<template>
+  <transition name="fade" tag="div">
+    <div class="modal_overlay" v-show="isOpen" @click="closeModal">
+      <div class="modal_content" @click.stop>
+        <button class="modal_close" @click="closeModal">&#x2715;</button>
+
+        <div class="modal_image">
+          <img :src="image" alt="Modal Image" />
+        </div>
+
+        <hr class="modal_line" />
+
+        <div class="modal_description">
+          <slot name="description"></slot>
+        </div>
+
+        <hr class="modal_line" />
+
+        <div class="modal_footer">
+          <slot name="footer"></slot>
+        </div>
+      </div>
+    </div>
+  </transition>
+</template>
 
 <style scoped>
 .modal_overlay {
@@ -73,6 +75,7 @@ const { isOpen, image, closeModal } = useModal();
   background-color: unset;
   border: none;
   font-size: 22px;
+  cursor: pointer;
 }
 
 .modal_line {
@@ -87,5 +90,18 @@ const { isOpen, image, closeModal } = useModal();
   margin-bottom: 20px;
   flex: 1;
   overflow: auto;
+}
+
+.fade-enter-active {
+  transition: all 0.4s ease;
+}
+
+.fade-leave-active {
+  transition: all 0.4s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  transform: translateX(100%);
 }
 </style>
