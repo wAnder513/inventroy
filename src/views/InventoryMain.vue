@@ -1,6 +1,6 @@
 <script setup>
 import CardDescription from "../components/card-description/CardDescription.vue";
-import InventoryManager from "../components/grid-inventroy/InventoryManager.vue";
+import InventoryGrid from "../components/grid-inventroy/InventoryGrid.vue";
 import InventoryParameters from "../components/parameters/InventoryParameters.vue";
 </script>
 
@@ -8,7 +8,7 @@ import InventoryParameters from "../components/parameters/InventoryParameters.vu
   <div class="main-inventory">
     <div class="main-inventory_wrapper">
       <CardDescription></CardDescription>
-      <InventoryManager></InventoryManager>
+      <InventoryGrid></InventoryGrid>
     </div>
 
     <InventoryParameters></InventoryParameters>

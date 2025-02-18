@@ -1,13 +1,11 @@
 <script setup>
 import { ref, computed } from "vue";
 import { useInventory } from "../../store/inventory";
-import RightSideModal from "../common/RightSideModal.vue";
-import SkeletonLoader from "../common/SkeletonLoader.vue";
-import { MODAL_CONTENT } from "../../constants/content";
-import useModal from "../../composible/useModal";
+import InventoryGridModal from "../grid-inventroy/InventoryGridModal.vue";
+import useGridModalContent from "../../composible/useGridModalContent";
 
 const inventoryStore = useInventory();
-const { setImage, openModal, closeModal } = useModal();
+const { openQuantityModal, openDeleteModal } = useGridModalContent();
 
 const dragging = ref({
   isDragging: false,
@@ -17,9 +15,6 @@ const dragging = ref({
   currentX: 0,
   currentY: 0,
 });
-
-let currentItem = ref({});
-const content = ref(MODAL_CONTENT.QUANTITY);
 
 const draggingItemStyle = computed(() => ({
   position: "fixed",
@@ -57,7 +52,6 @@ function onDragStart(row, col, event) {
     currentY: event.clientY - event.offsetY,
   };
 
-  // Очищаем клетку, откуда начали перетаскивание
   grid.value[row][col] = null;
 
   window.addEventListener("mousemove", onDrag);
@@ -80,7 +74,7 @@ function onDragEnd(event) {
 
   dragging.value.isDragging = false;
 
-  // Если элемент был "брошен" за пределы сетки, возвращаем его на исходное место
+  // Если элемент был брошен за пределы сетки, возвращаем его на исходное место
   const targetCell = event.target.closest(".inventory_cell");
 
   if (!targetCell) {
@@ -92,7 +86,6 @@ function onDragEnd(event) {
 function onDrop(row, col) {
   if (!dragging.value.isDragging) return;
 
-  // Если клетка пустая, перемещаем элемент
   if (!grid.value[row][col]) {
     grid.value[row][col] = dragging.value.item;
 
@@ -102,41 +95,6 @@ function onDrop(row, col) {
     grid.value[dragging.value.startRow][dragging.value.startCol] =
       dragging.value.item;
   }
-}
-
-function changeQuantityItem() {
-  if (currentItem.quantity === "") {
-    closeModal();
-    return;
-  }
-
-  currentItem.quantity <= 0
-    ? deleteItem()
-    : inventoryStore.changeQuantity(currentItem.id, currentItem.quantity);
-
-  closeModal();
-}
-
-function openQuantityModal(inventoryItem) {
-  content.value = MODAL_CONTENT.QUANTITY;
-  currentItem = { ...inventoryItem };
-
-  setImage(inventoryItem.image);
-  openModal();
-}
-
-function openDeleteModal(inventoryItem) {
-  content.value = MODAL_CONTENT.DELETE;
-  currentItem = { ...inventoryItem };
-
-  setImage(inventoryItem.image);
-  openModal();
-}
-
-function deleteItem() {
-  inventoryStore.deleteItemInventory(currentItem.id);
-
-  closeModal();
 }
 </script>
 
@@ -187,54 +145,7 @@ function deleteItem() {
       :style="draggingItemStyle"
     />
 
-    <RightSideModal>
-      <template #description>
-        <SkeletonLoader></SkeletonLoader>
-      </template>
-
-      <template #footer>
-        <template v-if="content === MODAL_CONTENT.QUANTITY">
-          <form @submit.prevent="changeQuantityItem">
-            <input
-              class="inventory-manager_input"
-              type="number"
-              min="0"
-              max="999"
-              placeholder="Введите количество"
-              v-model="currentItem.quantity"
-            />
-
-            <div class="inventory-manager_button-container">
-              <button
-                type="button"
-                class="inventory-manager_button cancel"
-                @click="closeModal"
-              >
-                Отмена
-              </button>
-
-              <button type="submit" class="inventory-manager_button complite">
-                {{
-                  content === MODAL_CONTENT.QUANTITY
-                    ? "Подтвердить"
-                    : "Удалить предмет"
-                }}
-              </button>
-            </div>
-          </form>
-        </template>
-
-        <template v-if="content === MODAL_CONTENT.DELETE">
-          <form @submit.prevent="deleteItem">
-            <div class="inventory-manager_button-container">
-              <button type="submit" class="inventory-manager_button complite">
-                Удалить предмет
-              </button>
-            </div>
-          </form>
-        </template>
-      </template>
-    </RightSideModal>
+    <InventoryGridModal></InventoryGridModal>
   </div>
 </template>
 
@@ -284,34 +195,5 @@ function deleteItem() {
 
 .dragging_item {
   z-index: 10;
-}
-
-.inventory-manager_input {
-  width: 100%;
-  margin-bottom: 20px;
-  font-size: 16px;
-  padding: 8px 4px;
-}
-
-.inventory-manager_button-container {
-  display: flex;
-  gap: 8px;
-}
-
-.inventory-manager_button {
-  width: 100%;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 8px;
-}
-
-.cancel {
-  background-color: var(--white-color);
-  color: var(--black-color);
-}
-
-.complite {
-  background-color: var(--red-color);
-  color: var(--white-color);
 }
 </style>
