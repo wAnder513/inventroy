@@ -32,7 +32,7 @@ const { isOpen, image, closeModal } = useModal();
 
 <style scoped>
 .modal_overlay {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -44,7 +44,7 @@ const { isOpen, image, closeModal } = useModal();
 }
 
 .modal_content {
-  width: 400px;
+  width: 250px;
   height: 100%;
   background-color: var(--black-color);
   display: flex;
@@ -55,7 +55,7 @@ const { isOpen, image, closeModal } = useModal();
 
 .modal_image {
   width: 100%;
-  height: 200px;
+  height: 160px;
   overflow: hidden;
   margin-bottom: 20px;
 }
@@ -70,11 +70,11 @@ const { isOpen, image, closeModal } = useModal();
 .modal_close {
   position: absolute;
   width: max-content;
-  top: 10px;
-  right: 10px;
+  top: 12px;
+  right: 12px;
   background-color: unset;
   border: none;
-  font-size: 22px;
+  font-size: 18px;
   cursor: pointer;
 }
 
@@ -93,11 +93,11 @@ const { isOpen, image, closeModal } = useModal();
 }
 
 .fade-enter-active {
-  transition: all 0.4s ease;
+  transition: all 0.4s ease 1s;
 }
 
 .fade-leave-active {
-  transition: all 0.4s ease;
+  transition: all 0.4s ease 1s;
 }
 
 .fade-enter-from,

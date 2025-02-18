@@ -5,8 +5,8 @@ const lines = ref([]);
 const containerRef = ref(null);
 
 const props = defineProps({
-  lineHeight: { type: Number, default: 8 },
-  gap: { type: Number, default: 16 },
+  lineHeight: { type: Number, default: 10 },
+  gap: { type: Number, default: 12 },
 });
 
 // Расчет количества линий

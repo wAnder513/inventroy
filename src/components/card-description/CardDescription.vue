@@ -18,7 +18,7 @@ import SkeletonLoader from "../common/SkeletonLoader.vue";
 .card-description {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px;
   border: 1px solid var(--gray-color);
   border-radius: 10px;
   padding: 16px;

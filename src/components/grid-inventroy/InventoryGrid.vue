@@ -1,59 +1,13 @@
-<template>
-  <div class="inventory_grid">
-    <div v-for="(row, rowIndex) in grid" :key="rowIndex" class="inventory_row">
-      <div
-        v-for="(cell, colIndex) in row"
-        :key="colIndex"
-        class="inventory_cell"
-        @mousedown="
-          (event) =>
-            event.button === 2 // клик ПКМ
-              ? openDeleteModal(cell)
-              : onDragStart(rowIndex, colIndex, event)
-        "
-        @mouseup="onDrop(rowIndex, colIndex)"
-      >
-        <template
-          v-if="
-            cell &&
-            !(
-              dragging.isDragging &&
-              dragging.startRow === rowIndex &&
-              dragging.startCol === colIndex
-            )
-          "
-        >
-          <div class="inventory_item">
-            <img :src="cell.image" alt="item inventory" />
-          </div>
-
-          <button
-            class="inventory_quantity"
-            @click.stop="openQuantityModal(cell)"
-          >
-            {{ cell.quantity }}
-          </button>
-        </template>
-      </div>
-    </div>
-
-    <img
-      v-if="dragging.isDragging"
-      class="inventory_item dragging_item"
-      :src="dragging.item.image"
-      alt="item inventory"
-      :style="draggingItemStyle"
-    />
-  </div>
-</template>
-
 <script setup>
 import { ref, computed } from "vue";
 import { useInventory } from "../../store/inventory";
+import RightSideModal from "../common/RightSideModal.vue";
+import SkeletonLoader from "../common/SkeletonLoader.vue";
+import { MODAL_CONTENT } from "../../constants/content";
+import useModal from "../../composible/useModal";
 
 const inventoryStore = useInventory();
-
-const emit = defineEmits(["openQuantityModal", "openDeleteModal"]);
+const { setImage, openModal, closeModal } = useModal();
 
 const dragging = ref({
   isDragging: false,
@@ -63,6 +17,9 @@ const dragging = ref({
   currentX: 0,
   currentY: 0,
 });
+
+let currentItem = ref({});
+const content = ref(MODAL_CONTENT.QUANTITY);
 
 const draggingItemStyle = computed(() => ({
   position: "fixed",
@@ -147,14 +104,139 @@ function onDrop(row, col) {
   }
 }
 
+function changeQuantityItem() {
+  if (currentItem.quantity === "") {
+    closeModal();
+    return;
+  }
+
+  currentItem.quantity <= 0
+    ? deleteItem()
+    : inventoryStore.changeQuantity(currentItem.id, currentItem.quantity);
+
+  closeModal();
+}
+
 function openQuantityModal(inventoryItem) {
-  emit("openQuantityModal", { ...inventoryItem });
+  content.value = MODAL_CONTENT.QUANTITY;
+  currentItem = { ...inventoryItem };
+
+  setImage(inventoryItem.image);
+  openModal();
 }
 
 function openDeleteModal(inventoryItem) {
-  emit("openDeleteModal", { ...inventoryItem });
+  content.value = MODAL_CONTENT.DELETE;
+  currentItem = { ...inventoryItem };
+
+  setImage(inventoryItem.image);
+  openModal();
+}
+
+function deleteItem() {
+  inventoryStore.deleteItemInventory(currentItem.id);
+
+  closeModal();
 }
 </script>
+
+<template>
+  <div class="inventory_grid">
+    <div v-for="(row, rowIndex) in grid" :key="rowIndex" class="inventory_row">
+      <div
+        v-for="(cell, colIndex) in row"
+        :key="colIndex"
+        class="inventory_cell"
+        @mousedown="
+          (event) =>
+            event.button === 2 // клик ПКМ
+              ? openDeleteModal(cell)
+              : onDragStart(rowIndex, colIndex, event)
+        "
+        @mouseup="onDrop(rowIndex, colIndex)"
+      >
+        <template
+          v-if="
+            cell &&
+            !(
+              dragging.isDragging &&
+              dragging.startRow === rowIndex &&
+              dragging.startCol === colIndex
+            )
+          "
+        >
+          <div class="inventory_item">
+            <img :src="cell.image" alt="item inventory" />
+          </div>
+
+          <button
+            class="inventory_quantity"
+            @click.stop="openQuantityModal(cell)"
+          >
+            {{ cell.quantity }}
+          </button>
+        </template>
+      </div>
+    </div>
+
+    <img
+      v-if="dragging.isDragging"
+      class="inventory_item dragging_item"
+      :src="dragging.item.image"
+      alt="item inventory"
+      :style="draggingItemStyle"
+    />
+
+    <RightSideModal>
+      <template #description>
+        <SkeletonLoader></SkeletonLoader>
+      </template>
+
+      <template #footer>
+        <template v-if="content === MODAL_CONTENT.QUANTITY">
+          <form @submit.prevent="changeQuantityItem">
+            <input
+              class="inventory-manager_input"
+              type="number"
+              min="0"
+              max="999"
+              placeholder="Введите количество"
+              v-model="currentItem.quantity"
+            />
+
+            <div class="inventory-manager_button-container">
+              <button
+                type="button"
+                class="inventory-manager_button cancel"
+                @click="closeModal"
+              >
+                Отмена
+              </button>
+
+              <button type="submit" class="inventory-manager_button complite">
+                {{
+                  content === MODAL_CONTENT.QUANTITY
+                    ? "Подтвердить"
+                    : "Удалить предмет"
+                }}
+              </button>
+            </div>
+          </form>
+        </template>
+
+        <template v-if="content === MODAL_CONTENT.DELETE">
+          <form @submit.prevent="deleteItem">
+            <div class="inventory-manager_button-container">
+              <button type="submit" class="inventory-manager_button complite">
+                Удалить предмет
+              </button>
+            </div>
+          </form>
+        </template>
+      </template>
+    </RightSideModal>
+  </div>
+</template>
 
 <style scoped>
 .inventory_grid {
@@ -202,5 +284,34 @@ function openDeleteModal(inventoryItem) {
 
 .dragging_item {
   z-index: 10;
+}
+
+.inventory-manager_input {
+  width: 100%;
+  margin-bottom: 20px;
+  font-size: 16px;
+  padding: 8px 4px;
+}
+
+.inventory-manager_button-container {
+  display: flex;
+  gap: 8px;
+}
+
+.inventory-manager_button {
+  width: 100%;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+}
+
+.cancel {
+  background-color: var(--white-color);
+  color: var(--black-color);
+}
+
+.complite {
+  background-color: var(--red-color);
+  color: var(--white-color);
 }
 </style>
