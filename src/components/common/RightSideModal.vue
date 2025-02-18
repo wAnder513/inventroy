@@ -6,7 +6,7 @@ const { isOpen, image, closeModal } = useModal();
 
 <template>
   <transition name="fade" tag="div">
-    <div class="modal_overlay" v-show="isOpen" @click="closeModal">
+    <div class="modal_overlay" v-if="isOpen" @click="closeModal">
       <div class="modal_content" @click.stop>
         <button class="modal_close" @click="closeModal">&#x2715;</button>
 

@@ -22,6 +22,8 @@ import SkeletonLoader from "../common/SkeletonLoader.vue";
   border: 1px solid var(--gray-color);
   border-radius: 10px;
   padding: 16px;
+  overflow: hidden;
+  min-width: 235px;
 }
 
 .card-description_picutre {

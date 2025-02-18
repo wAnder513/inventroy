@@ -21,6 +21,7 @@ import InventoryParameters from "../components/parameters/InventoryParameters.vu
   flex-direction: column;
   gap: 24px;
   max-width: 850px;
+  min-width: max-content;
   margin: 20px auto 0;
   border: 1px solid var(--gray-color);
   padding: 32px;

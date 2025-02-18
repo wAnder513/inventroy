@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref } from "vue";
+import { ref } from "vue";
 import useModal from "../../composible/useModal";
 import RightSideModal from "../common/RightSideModal.vue";
 import SkeletonLoader from "../common/SkeletonLoader.vue";

@@ -1,26 +1,47 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 
 const lines = ref([]);
+const containerRef = ref(null);
 
 const props = defineProps({
-  numberOfLines: { type: Number, default: 5 },
+  lineHeight: { type: Number, default: 8 },
+  gap: { type: Number, default: 16 },
 });
 
-onMounted(() => {
-  lines.value = Array.from({ length: props.numberOfLines }, () => ({
-    width: generateRandomWidth(),
-  }));
-});
+// Расчет количества линий
+function calculateLines() {
+  if (containerRef.value) {
+    const headerHeight = 20;
+    const footerHeight = 8;
+    const containerHeight = containerRef.value.clientHeight;
+    const availableHeight =
+      containerHeight - headerHeight - footerHeight - props.gap * 2; // Доступная высота для линий
+    const numberOfLines = Math.floor(
+      availableHeight / (props.lineHeight + props.gap)
+    );
+    lines.value = Array.from({ length: numberOfLines }, () => ({
+      width: generateRandomWidth(),
+    }));
+  }
+}
 
 // Генерация случайной ширины в процентах
 function generateRandomWidth() {
   return Math.floor(Math.random() * (100 - 40 + 1)) + 40;
 }
+
+onMounted(() => {
+  calculateLines();
+});
+
+watch(containerRef, () => {
+  calculateLines();
+});
 </script>
 
 <template>
-  <div class="skeleton_loader">
+  <div class="skeleton_loader" ref="containerRef">
     <div class="skeleton_line skeleton_header"></div>
     <div
       class="skeleton_line"
@@ -38,12 +59,13 @@ function generateRandomWidth() {
   flex-direction: column;
   align-items: center;
   width: 100%;
+  height: 100%;
 }
 
 .skeleton_line {
   background-color: var(--gray-color);
-  height: 8px;
-  margin-bottom: 16px;
+  height: v-bind('props.lineHeight + "px"');
+  margin-bottom: v-bind('props.gap + "px"');
   border-radius: 4px;
   animation: pulse 1.5s infinite ease-in-out;
   width: 100%;
@@ -60,6 +82,7 @@ function generateRandomWidth() {
 }
 
 .skeleton_footer {
+  height: 8px;
   width: 30%;
   margin-top: 15px;
 }
