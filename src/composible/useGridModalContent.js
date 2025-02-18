@@ -1,4 +1,4 @@
-import { readonly, ref } from "vue";
+import { ref } from "vue";
 import useModal from "./useModal";
 import { useInventory } from "../store/inventory";
 import { MODAL_CONTENT } from "../constants/content";

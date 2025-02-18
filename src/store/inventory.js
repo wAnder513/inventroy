@@ -1,4 +1,4 @@
-import { computed, reactive, readonly, ref } from "vue";
+import { readonly, ref } from "vue";
 import { defineStore } from "pinia";
 import { LOCAL_STORAGE_KEY_INVENTORY } from "../constants/local-storage";
 
