@@ -5,7 +5,7 @@ const { isOpen, image, closeModal } = useModal();
 </script>
 
 <template>
-  <transition name="fade" tag="div">
+  <transition name="slide-fade" tag="div">
     <div class="modal_overlay" v-if="isOpen" @click="closeModal">
       <div class="modal_content" @click.stop>
         <button class="modal_close" @click="closeModal">&#x2715;</button>
@@ -92,16 +92,17 @@ const { isOpen, image, closeModal } = useModal();
   overflow: auto;
 }
 
-.fade-enter-active {
-  transition: all 0.4s ease 1s;
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
 }
 
-.fade-leave-active {
-  transition: all 0.4s ease 1s;
+.slide-fade-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
 }
 
-.fade-enter-from,
-.fade-leave-to {
-  transform: translateX(100%);
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(5px);
+  opacity: 0;
 }
 </style>
