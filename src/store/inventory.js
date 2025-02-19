@@ -12,7 +12,7 @@ const purpleImg = purple;
 const inventoryItems = ref([
   {
     id: 0,
-    image: greenImg,
+    image: green,
     quantity: 1,
     info: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cum magni consequuntur placeat excepturi. Fugit dicta officiis tenetur maxime quia. Soluta ad praesentium voluptate autem, corrupti obcaecati officia vero aliquid dolor.",
     gridPosition: [0, 0],
