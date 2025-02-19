@@ -1,11 +1,18 @@
 import { readonly, ref } from "vue";
 import { defineStore } from "pinia";
 import { LOCAL_STORAGE_KEY_INVENTORY } from "../constants/local-storage";
+import green from "/src/static/green-item.jpg";
+import brown from "/src/static/brown-item.jpg";
+import purple from "/src/static/purple-item.jpg";
+
+const greenImg = green;
+const brownImg = brown;
+const purpleImg = purple;
 
 const inventoryItems = ref([
   {
     id: 0,
-    image: "/src/static/green-item.jpg",
+    image: greenImg,
     quantity: 1,
     info: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cum magni consequuntur placeat excepturi. Fugit dicta officiis tenetur maxime quia. Soluta ad praesentium voluptate autem, corrupti obcaecati officia vero aliquid dolor.",
     gridPosition: [0, 0],
