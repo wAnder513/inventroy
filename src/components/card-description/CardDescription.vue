@@ -1,13 +1,15 @@
 <script setup>
 import SkeletonLoader from "../common/SkeletonLoader.vue";
 import descriptionImage from "/src/static/description-img.jpg";
-
-const image = descriptionImage;
 </script>
 
 <template>
   <div class="card-description">
-    <img class="card-description_picutre" :src="image" alt="description" />
+    <img
+      class="card-description_picutre"
+      :src="descriptionImage"
+      alt="description"
+    />
 
     <SkeletonLoader></SkeletonLoader>
   </div>

@@ -5,10 +5,6 @@ import green from "/src/static/green-item.jpg";
 import brown from "/src/static/brown-item.jpg";
 import purple from "/src/static/purple-item.jpg";
 
-const greenImg = green;
-const brownImg = brown;
-const purpleImg = purple;
-
 const inventoryItems = ref([
   {
     id: 0,
@@ -19,14 +15,14 @@ const inventoryItems = ref([
   },
   {
     id: 1,
-    image: "/src/static/brown-item.jpg",
+    image: brown,
     quantity: 2,
     info: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cum magni consequuntur placeat excepturi. Fugit dicta officiis tenetur maxime quia. Soluta ad praesentium voluptate autem, corrupti obcaecati officia vero aliquid dolor.",
     gridPosition: [1, 1],
   },
   {
     id: 2,
-    image: "/src/static/purple-item.jpg",
+    image: purple,
     quantity: 2,
     info: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cum magni consequuntur placeat excepturi. Fugit dicta officiis tenetur maxime quia. Soluta ad praesentium voluptate autem, corrupti obcaecati officia vero aliquid dolor.",
     gridPosition: [2, 2],
