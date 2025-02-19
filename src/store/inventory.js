@@ -5,21 +5,21 @@ import { LOCAL_STORAGE_KEY_INVENTORY } from "../constants/local-storage";
 const inventoryItems = ref([
   {
     id: 0,
-    image: "../src/assets/green-item.jpg",
+    image: "/src/static/green-item.jpg",
     quantity: 1,
     info: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cum magni consequuntur placeat excepturi. Fugit dicta officiis tenetur maxime quia. Soluta ad praesentium voluptate autem, corrupti obcaecati officia vero aliquid dolor.",
     gridPosition: [0, 0],
   },
   {
     id: 1,
-    image: "../src/assets/brown-item.jpg",
+    image: "/src/static/brown-item.jpg",
     quantity: 2,
     info: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cum magni consequuntur placeat excepturi. Fugit dicta officiis tenetur maxime quia. Soluta ad praesentium voluptate autem, corrupti obcaecati officia vero aliquid dolor.",
     gridPosition: [1, 1],
   },
   {
     id: 2,
-    image: "../src/assets/purple-item.jpg",
+    image: "/src/static/purple-item.jpg",
     quantity: 2,
     info: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cum magni consequuntur placeat excepturi. Fugit dicta officiis tenetur maxime quia. Soluta ad praesentium voluptate autem, corrupti obcaecati officia vero aliquid dolor.",
     gridPosition: [2, 2],
